@@ -1,9 +1,11 @@
+import eventlet
+eventlet.monkey_patch()
 from flask import Flask, render_template, request
 from flask_socketio import SocketIO, send, join_room, leave_room, emit
 import sqlite3
 import os
 
-
+socketio = SocketIO(app, cors_allowed_origins="*")
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app, cors_allowed_origins="*")

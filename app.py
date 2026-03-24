@@ -1,6 +1,3 @@
-import eventlet
-eventlet.monkey_patch()
-
 from flask import Flask, render_template, request
 from flask_socketio import SocketIO, send, join_room, emit
 import sqlite3
@@ -9,10 +6,9 @@ import os
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 
-# IMPORTANT for deployment
-socketio = SocketIO(app, cors_allowed_origins="*")
+# Use threading (IMPORTANT - stable on Railway)
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
 
-# store users
 rooms = {}
 clients = {}
 
@@ -30,19 +26,16 @@ def on_join(data):
 
     join_room(room)
 
-    # store client info
     clients[sid] = {"user": username, "room": room}
 
-    # add user to room
     if room not in rooms:
         rooms[room] = []
     if username not in rooms[room]:
         rooms[room].append(username)
 
-    # send updated user list
     emit('user_list', rooms[room], to=room)
 
-    # load old messages
+    # Load old messages
     conn = sqlite3.connect('chat.db')
     c = conn.cursor()
     c.execute("SELECT username, message FROM messages WHERE room=?", (room,))
@@ -62,7 +55,6 @@ def handle_message(data):
     room = data['room']
     message = data['text']
 
-    # save message
     conn = sqlite3.connect('chat.db')
     c = conn.cursor()
     c.execute(
@@ -75,7 +67,7 @@ def handle_message(data):
     send(data, to=room)
 
 
-# DISCONNECT (remove user)
+# DISCONNECT
 @socketio.on('disconnect')
 def on_disconnect():
     sid = request.sid
@@ -93,7 +85,7 @@ def on_disconnect():
         del clients[sid]
 
 
-# RUN APP (IMPORTANT FOR RAILWAY)
+# RUN APP
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     socketio.run(app, host="0.0.0.0", port=port)

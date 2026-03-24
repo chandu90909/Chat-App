@@ -1,16 +1,15 @@
 from flask import Flask, render_template, request
 from flask_socketio import SocketIO, send, join_room, emit
-import sqlite3
 import os
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 
-# Use threading (IMPORTANT - stable on Railway)
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
 
 rooms = {}
 clients = {}
+messages = {}   # store messages in memory
 
 @app.route('/')
 def home():
@@ -35,15 +34,10 @@ def on_join(data):
 
     emit('user_list', rooms[room], to=room)
 
-    # Load old messages
-    conn = sqlite3.connect('chat.db')
-    c = conn.cursor()
-    c.execute("SELECT username, message FROM messages WHERE room=?", (room,))
-    old_msgs = c.fetchall()
-    conn.close()
-
-    for msg in old_msgs:
-        emit('message', {'user': msg[0], 'text': msg[1]})
+    # send old messages (in memory)
+    if room in messages:
+        for msg in messages[room]:
+            emit('message', msg)
 
     send(f"{username} joined {room}", to=room)
 
@@ -51,18 +45,12 @@ def on_join(data):
 # SEND MESSAGE
 @socketio.on('message')
 def handle_message(data):
-    username = data['user']
     room = data['room']
-    message = data['text']
 
-    conn = sqlite3.connect('chat.db')
-    c = conn.cursor()
-    c.execute(
-        "INSERT INTO messages (username, room, message) VALUES (?, ?, ?)",
-        (username, room, message)
-    )
-    conn.commit()
-    conn.close()
+    # store in memory
+    if room not in messages:
+        messages[room] = []
+    messages[room].append(data)
 
     send(data, to=room)
 

@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request
 from flask_socketio import SocketIO, send, join_room, leave_room, emit
 import sqlite3
+import os
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
@@ -81,6 +83,6 @@ def handle_message(data):
     conn.close()
 
     send(data, to=room)
-
 if __name__ == "__main__":
-    socketio.run(app, host="0.0.0.0", port=5000)
+    port = int(os.environ.get("PORT", 5000))
+    socketio.run(app, host="0.0.0.0", port=port)

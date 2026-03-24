@@ -1,0 +1,97 @@
+<!doctype html>
+<html>
+<head>
+    <title>Chat Rooms 💬</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
+</head>
+<body>
+
+<div class="chat-container">
+
+    <div class="header">
+        💬 Chat Rooms
+    </div>
+
+    <!-- Join -->
+    <div style="padding:10px;">
+        <input id="username" placeholder="Enter your name">
+        <input id="room" placeholder="Enter room name">
+        <button onclick="joinRoom()">Join Room</button>
+    </div>
+
+    <!-- Online Users -->
+    <div style="padding:10px;">
+        <h3>🟢 Online Users</h3>
+        <ul id="users"></ul>
+    </div>
+
+    <!-- Messages -->
+    <div id="messages" class="messages"></div>
+
+    <!-- Input -->
+    <div class="input-area">
+        <input id="message" placeholder="Type message...">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+
+</div>
+
+<script>
+    var socket = io();
+    var username = "";
+    var room = "";
+
+    function joinRoom() {
+        username = document.getElementById("username").value;
+        room = document.getElementById("room").value;
+
+        socket.emit('join', {user: username, room: room});
+    }
+
+    function sendMessage() {
+        let msg = document.getElementById("message").value;
+
+        socket.send({
+            user: username,
+            text: msg,
+            room: room
+        });
+
+        document.getElementById("message").value = "";
+    }
+
+    // RECEIVE MESSAGE
+    socket.on('message', function(data) {
+        let div = document.createElement("div");
+
+        if (typeof data === "string") {
+            div.innerText = data;
+        } else {
+            if (data.user === username) {
+                div.className = "message sent";
+            } else {
+                div.className = "message received";
+            }
+            div.innerText = data.user + ": " + data.text;
+        }
+
+        document.getElementById("messages").appendChild(div);
+    });
+
+    // RECEIVE USER LIST
+    socket.on('user_list', function(users) {
+        let ul = document.getElementById("users");
+        ul.innerHTML = "";
+
+        users.forEach(user => {
+            let li = document.createElement("li");
+            li.innerText = user;
+            ul.appendChild(li);
+        });
+    });
+</script>
+
+</body>
+</html>

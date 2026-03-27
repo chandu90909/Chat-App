@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat Room</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="chat-container">
+    <h2>Room: {{ room }}</h2>
+
+    <div class="chat-box">
+        {% for msg in messages %}
+            <p>{{ msg }}</p>
+        {% endfor %}
+    </div>
+
+    <form action="/send" method="POST">
+        <input type="hidden" name="username" value="{{ username }}">
+        <input type="hidden" name="room" value="{{ room }}">
+        <input type="text" name="message" placeholder="Type message..." required>
+        <button type="submit">Send</button>
+    </form>
+
+    <a href="/">⬅ Back</a>
+</div>
+
+</body>
+</html>

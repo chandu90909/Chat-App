@@ -1,77 +1,31 @@
-/* Page */
 body {
     font-family: Arial;
-    background: #ece5dd;
-    margin: 0;
-}
-
-/* Chat container */
-.chat-container {
-    width: 400px;
-    margin: 30px auto;
-    background: white;
-    border-radius: 10px;
-    display: flex;
-    flex-direction: column;
-    height: 600px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-}
-
-/* Header */
-.header {
-    background: #075e54;
-    color: white;
-    padding: 15px;
+    background: #f2f2f2;
     text-align: center;
-    font-size: 18px;
 }
 
-/* Messages area */
-.messages {
-    flex: 1;
-    padding: 10px;
-    overflow-y: auto;
-}
-
-/* Message bubble */
-.message {
-    margin: 8px 0;
-    padding: 10px;
-    border-radius: 10px;
-    max-width: 70%;
-}
-
-/* Sent message */
-.sent {
-    background: #dcf8c6;
-    margin-left: auto;
-}
-
-/* Received message */
-.received {
-    background: #f1f0f0;
-}
-
-/* Input area */
-.input-area {
-    display: flex;
-    padding: 10px;
-    border-top: 1px solid #ccc;
+.container, .chat-container {
+    margin-top: 100px;
 }
 
 input {
-    flex: 1;
     padding: 10px;
-    border-radius: 20px;
-    border: 1px solid #ccc;
+    margin: 5px;
 }
 
 button {
-    margin-left: 10px;
     padding: 10px 15px;
-    background: #075e54;
+    background: #007bff;
     color: white;
     border: none;
-    border-radius: 20px;
-    cursor: pointer;
+}
+
+.chat-box {
+    width: 300px;
+    height: 200px;
+    overflow-y: scroll;
+    background: white;
+    margin: auto;
+    padding: 10px;
+    border: 1px solid #ccc;
 }

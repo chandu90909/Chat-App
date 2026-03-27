@@ -1,23 +1,20 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
 <head>
-    <title>Chat App</title>
+    <title>Join Chat</title>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
 
-<h1>💬 Chat App</h1>
+<div class="container">
+    <h1>💬 Chat App</h1>
 
-<form method="POST" action="/send">
-    <input name="username" placeholder="Name" required>
-    <input name="message" placeholder="Message" required>
-    <button type="submit">Send</button>
-</form>
-
-<hr>
-
-{% for m in messages %}
-<p>{{ m }}</p>
-{% endfor %}
+    <form action="/join" method="POST">
+        <input type="text" name="username" placeholder="Enter your name" required>
+        <input type="text" name="room" placeholder="Enter room name" required>
+        <button type="submit">Join Room</button>
+    </form>
+</div>
 
 </body>
 </html>
